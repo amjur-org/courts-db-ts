@@ -30,23 +30,23 @@ describe('Courts DB TypeScript', () => {
     }
   });
 
-  test('should find courts by name', () => {
-    const results = findCourt('Supreme Court');
+  test('should find courts by name', async () => {
+    const results = await findCourt('Supreme Court of the United States');
     expect(results).toBeDefined();
     expect(Array.isArray(results)).toBe(true);
     expect(results.length).toBeGreaterThan(0);
   });
 
-  test('should handle unicode in court names', () => {
-    const results = findCourt('Tribunal Dé Apelaciones De Puerto Rico');
+  test('should handle unicode in court names', async () => {
+    const results = await findCourt('Tribunal Dé Apelaciones De Puerto Rico');
     expect(results).toBeDefined();
     expect(Array.isArray(results)).toBe(true);
     // Should find the Puerto Rico appeals court
     expect(results).toContain('prapp');
   });
 
-  test('should filter by location', () => {
-    const results = findCourt('Calhoun County Circuit Court', { location: 'Florida' });
+  test('should filter by location', async () => {
+    const results = await findCourt('Calhoun County Circuit Court', { location: 'Florida' });
     expect(results).toBeDefined();
     expect(Array.isArray(results)).toBe(true);
     expect(results).toContain('flacirct14cal');

@@ -7,7 +7,8 @@ import {
   substituteEdition, 
   substituteEditions, 
   getPCREPatternFromData,
-  convertNamedGroups
+  convertNamedGroups,
+  compileRegexPartial
 } from '@syntropiq/xtrax/pcre-utils';
 import { 
   processVariables as xtraxProcessVariables, 
@@ -136,8 +137,13 @@ export function loadCourtsDb(): Courts {
   // Parse the processed JSON
   const data = JSON.parse(courtsContent) as Courts;
   
-  // Handle parent court inheritance
+  // Handle parent court inheritance and normalize parent field
   for (const court of data) {
+    // Normalize missing parent field to null (to match Python behavior)
+    if (!court.parent) {
+      court.parent = null;
+    }
+    
     if (court.parent) {
       const parent = data.find(c => c.id === court.parent);
       if (parent) {
@@ -181,23 +187,30 @@ export function makeCourtDictionary(courts: Courts): CourtDict {
 /**
  * Compile all regex patterns for courts
  */
-export function gatherRegexes(courts: Courts): CompiledRegexes {
+export async function gatherRegexes(courts: Courts): Promise<CompiledRegexes> {
   const variables = loadRegexVariables();
   const compiledRegexes: CompiledRegexes = {};
   
   for (const court of courts) {
-    const regexes: RegExp[] = [];
+    const regexes: any[] = [];
     
-    for (const regexPattern of court.regex) {
+    // Add court name as a regex pattern (like Python version does)
+    const courtRegexPatterns = [...court.regex, court.name];
+    
+    for (const regexPattern of courtRegexPatterns) {
       try {
         // Use xtrax recursive substitution for variables
-        const processedPattern = recursiveSubstitute(regexPattern, variables);
+        let processedPattern = recursiveSubstitute(regexPattern, variables);
         
-        // Create case-insensitive regex
-        const regex = new RegExp(processedPattern, 'i');
-        regexes.push(regex);
+        // Convert Python named groups to PCRE format if needed
+        processedPattern = convertNamedGroups(processedPattern);
+        
+        // Compile using XTRAX PCRE compiler
+        const compiledRegex = await compileRegexPartial(processedPattern);
+        
+        regexes.push(compiledRegex);
       } catch (error) {
-        console.warn(`Failed to compile regex for court ${court.id}: ${regexPattern}`, error);
+        console.warn(`Failed to compile PCRE regex for court ${court.id}: ${regexPattern}`, error);
       }
     }
     

@@ -39,4 +39,4 @@ export interface FindCourtByDateOptions extends FindCourtOptions {
 
 export type Courts = Court[];
 export type CourtDict = { [id: string]: Court };
-export type CompiledRegexes = { [id: string]: RegExp[] };
+export type CompiledRegexes = { [id: string]: any[] }; // PCRE compiled regexes
