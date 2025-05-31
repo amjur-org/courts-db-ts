@@ -1,0 +1,57 @@
+{
+  "name": "@amjur/courts-db-ts",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "courts_db"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:run": "vitest run",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amjur-org/courts-db-ts.git"
+  },
+  "keywords": [
+    "legal",
+    "courts",
+    "court-identification",
+    "law",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/amjur-org/courts-db-ts/issues"
+  },
+  "homepage": "https://github.com/amjur-org/courts-db-ts#readme",
+  "description": "TypeScript port of the Python courts-db library for legal court identification",
+  "dependencies": {
+    "@syntropiq/xtrax": "latest",
+    "ajv": "latest",
+    "unidecode": "latest"
+  },
+  "peerDependencies": {
+    "@syntropiq/libpcre-ts": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}
