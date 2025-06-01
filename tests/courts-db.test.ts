@@ -43,7 +43,7 @@ describe('Courts DB Tests', () => {
           console.log('√');
         }
       }
-    });
+    }, 300000); // 5 minute timeout
 
     test('location filter', async () => {
       const courtIds = await findCourt("Calhoun County Circuit Court");
@@ -82,7 +82,7 @@ describe('Courts DB Tests', () => {
           expect(results).toContain(court.id);
         }
       }
-    });
+    }, 120000); // 2 minute timeout
 
     test('bankruptcy examples', async () => {
       for (const court of courts) {

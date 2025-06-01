@@ -2,18 +2,18 @@ import { readFileSync, readdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import unidecode from 'unidecode';
-import { 
-  escapeRegex, 
-  substituteEdition, 
-  substituteEditions, 
+import { PCREUtils } from '@syntropiq/xtrax';
+import { processVariables as xtraxProcessVariables, recursiveSubstitute } from '@syntropiq/xtrax/template-engine';
+import { stripPunc } from './text-utils.js';
+
+const {
+  escapeRegex,
+  substituteEdition,
+  substituteEditions,
   getPCREPatternFromData,
-  convertNamedGroups,
-  compileRegexPartial
-} from '@syntropiq/xtrax/pcre-utils';
-import { 
-  processVariables as xtraxProcessVariables, 
-  recursiveSubstitute 
-} from '@syntropiq/xtrax/template-engine';
+  convertNamedGroups
+} = PCREUtils;
+import { compileRegex } from '@syntropiq/xtrax/pcre-utils';
 import type { 
   Courts, 
   Court, 
@@ -131,8 +131,9 @@ export function loadCourtsDb(): Courts {
     courtsContent = courtsContent.replace(variablePattern, value);
   }
   
-  // Handle backslashes
-  courtsContent = courtsContent.replace(/\\/g, '\\\\');
+  // Handle backslashes carefully - only escape single backslashes that aren't already escaped
+  // This preserves regex patterns like \\d+ while escaping any unescaped backslashes
+  courtsContent = courtsContent.replace(/(?<!\\)\\(?!\\)/g, '\\\\');
   
   // Parse the processed JSON
   const data = JSON.parse(courtsContent) as Courts;
@@ -205,8 +206,16 @@ export async function gatherRegexes(courts: Courts): Promise<CompiledRegexes> {
         // Convert Python named groups to PCRE format if needed
         processedPattern = convertNamedGroups(processedPattern);
         
+        // Normalize Unicode characters in the pattern to match input normalization
+        processedPattern = unidecode(processedPattern);
+        
+        // Make pattern case-insensitive by adding (?i) flag
+        if (!processedPattern.startsWith('(?i)')) {
+          processedPattern = '(?i)' + processedPattern;
+        }
+        
         // Compile using XTRAX PCRE compiler
-        const compiledRegex = await compileRegexPartial(processedPattern);
+        const compiledRegex = await compileRegex(processedPattern);
         
         regexes.push(compiledRegex);
       } catch (error) {

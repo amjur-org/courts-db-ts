@@ -85,13 +85,18 @@ export async function findCourtIdsByName(
     // Check if any PCRE regex matches
     const courtRegexes = compiledRegexes[court.id] || [];
     for (const pcreRegex of courtRegexes) {
-      const match = pcreRegex.match(normalizedInput);
-      if (match && match.matched) {
-        matches.push({
-          courtId: court.id,
-          matchedText: match.fullMatch || normalizedInput
-        });
-        break; // Found a match for this court, move to next court
+      try {
+        const testResult = pcreRegex.test(normalizedInput);
+        
+        if (testResult) {
+          matches.push({
+            courtId: court.id,
+            matchedText: normalizedInput
+          });
+          break; // Found a match for this court, move to next court
+        }
+      } catch (error) {
+        console.warn(`Error testing regex for court ${court.id}:`, error);
       }
     }
   }
@@ -151,15 +156,20 @@ export async function findCourt(
   courtStr: string,
   options: FindCourtByDateOptions = {}
 ): Promise<string[]> {
-  const { 
-    bankruptcy = null, 
-    location = null, 
+  const {
+    bankruptcy = null,
+    location = null,
     allowPartialMatches = false,
-    date = null 
+    date = null
   } = options;
   
   // First find by name with basic filters
   let matches = await findCourtIdsByName(courtStr, bankruptcy, location, allowPartialMatches);
+  
+  // Check bankruptcy cases if appropriate (like Python does - double filtering)
+  if (bankruptcy !== null && bankruptcy !== undefined) {
+    matches = filterCourtsByBankruptcy(matches, bankruptcy);
+  }
   
   // Then filter by date if provided
   if (date) {

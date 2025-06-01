@@ -42,16 +42,17 @@
   "homepage": "https://github.com/amjur-org/courts-db-ts#readme",
   "description": "TypeScript port of the Python courts-db library for legal court identification",
   "dependencies": {
-    "@syntropiq/xtrax": "latest",
-    "ajv": "latest",
-    "unidecode": "latest"
+    "@syntropiq/xtrax": "^1.0.0",
+    "ajv": "^8.17.1",
+    "unidecode": "^1.1.0"
   },
   "peerDependencies": {
-    "@syntropiq/libpcre-ts": "latest"
+    "@syntropiq/libpcre-ts": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "@types/node": "^22.15.27",
+    "@types/unidecode": "^1.1.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4"
   }
 }
