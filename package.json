@@ -1,6 +1,6 @@
 {
   "name": "@amjur/courts-db-ts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -42,12 +42,12 @@
   "homepage": "https://github.com/amjur-org/courts-db-ts#readme",
   "description": "TypeScript port of the Python courts-db library for legal court identification",
   "dependencies": {
-    "@syntropiq/xtrax": "^1.0.0",
+    "@syntropiq/xtrax": "^1.1.0",
     "ajv": "^8.17.1",
     "unidecode": "^1.1.0"
   },
   "peerDependencies": {
-    "@syntropiq/libpcre-ts": "^1.0.0"
+    "@syntropiq/libpcre-ts": "^1.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.27",
