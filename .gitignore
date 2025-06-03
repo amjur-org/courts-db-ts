@@ -211,3 +211,5 @@ Thumbs.db
 # Project specific
 courts_db/*.json
 courts_db/*.txt
+bun.lock
+package-lock.json
